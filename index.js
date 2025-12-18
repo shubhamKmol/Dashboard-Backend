@@ -32,13 +32,36 @@ const pool = require("./db");
 
 app.get("/api/merchants", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM merchants");
-    res.json(result.rows);
+    const result = await pool.query(`
+      SELECT
+        id,
+        name,
+        country,
+        status,
+        monthly_volume,
+        chargeback_ratio,
+        risk_level
+      FROM merchants
+      ORDER BY id ASC
+    `);
+
+    const merchants = result.rows.map(row => ({
+      id: row.id,
+      name: row.name,
+      country: row.country,
+      status: row.status,
+      monthlyVolume: Number(row.monthly_volume),
+      chargebackRatio: Number(row.chargeback_ratio),
+      riskLevel: row.risk_level
+    }));
+
+    res.json(merchants);
   } catch (err) {
     console.error("DB error:", err);
     res.status(500).json({ error: "Database error" });
   }
 });
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
