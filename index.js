@@ -42,7 +42,6 @@ app.get("/api/merchants", async (req, res) => {
         chargeback_ratio,
         risk_level
       FROM merchants
-      ORDER BY id ASC
     `);
 
     const merchants = result.rows.map(row => ({
@@ -57,10 +56,13 @@ app.get("/api/merchants", async (req, res) => {
 
     res.json(merchants);
   } catch (err) {
-    console.error("DB error:", err);
-    res.status(500).json({ error: "Database error" });
+    console.error("REAL DB ERROR:", err);   // <-- critical
+    res.status(500).json({
+      error: err.message,                  // <-- expose it TEMPORARILY
+    });
   }
 });
+
 
 
 const PORT = process.env.PORT || 5000;
