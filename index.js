@@ -10,9 +10,19 @@ const merchants = [
         id: "1",
         name: "Amazon Seller",
         status: "ACTIVE",
-        riskScore: 72,
+        "monthlyVolume": 60000,
+        "chargebackRatio": 1.0,
+        "riskLevel": "low",
         country: "India"
-    }
+    }, {
+        "id": "m7",
+        "name": "Alpha Services",
+        "country": "AU",
+        "status": "paused",
+        "monthlyVolume": 60000,
+        "chargebackRatio": 1.0,
+        "riskLevel": "low"
+    },
 ];
 
 app.get("/api/merchants", (req, res) => {
