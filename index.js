@@ -16,7 +16,7 @@ app.use(
     origin: [
       "http://localhost:3000",
       // "https://your-netlify-site.netlify.app"
-      "https://merchant-ops-dashboard.netlify.app/merchants"
+      "https://merchant-ops-dashboard.netlify.app"
     ],
   })
 );
