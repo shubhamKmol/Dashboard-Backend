@@ -139,6 +139,79 @@ app.post("/api/merchants", async (req, res) => {
     res.status(500).json({ error: "Failed to create merchant" });
   }
 });
+app.put("/api/merchants/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      name,
+      country,
+      status,
+      monthlyVolume,
+      chargebackRatio,
+      riskLevel,
+    } = req.body;
+
+    // Validation
+    if (
+      !id ||
+      !name ||
+      !country ||
+      country.length !== 2 ||
+      !status ||
+      monthlyVolume == null ||
+      chargebackRatio == null ||
+      !riskLevel
+    ) {
+      return res.status(400).json({ error: "Invalid merchant data" });
+    }
+
+    const result = await pool.query(
+      `
+      UPDATE merchants
+      SET
+        name = $1,
+        country = $2,
+        status = $3,
+        monthly_volume = $4,
+        chargeback_ratio = $5,
+        risk_level = $6
+      WHERE id = $7
+      RETURNING
+        id, name, country, status,
+        monthly_volume, chargeback_ratio, risk_level
+      `,
+      [
+        name,
+        country,
+        status,
+        monthlyVolume,
+        chargebackRatio,
+        riskLevel,
+        id,
+      ]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Merchant not found" });
+    }
+
+    const row = result.rows[0];
+
+    res.json({
+      id: row.id,
+      name: row.name,
+      country: row.country,
+      status: row.status,
+      monthlyVolume: Number(row.monthly_volume),
+      chargebackRatio: Number(row.chargeback_ratio),
+      riskLevel: row.risk_level,
+    });
+  } catch (err) {
+    console.error("UPDATE MERCHANT ERROR:", err);
+    res.status(500).json({ error: "Failed to update merchant" });
+  }
+});
+
 
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
